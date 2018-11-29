@@ -92,6 +92,9 @@ function btnPress() {
     ub.replace("e", "ℯ");
     d.replace("e", "ℯ");
 
+    // If there is no function declaration
+    if(d.empty()) d = "x^2";
+
     let intervalType = 0; // 0 -> no interval, 1 -> only min, 2 only max, 3 both
     let new_interval = "";
     // If an interval is used, format it and display it correctly
