@@ -86,6 +86,7 @@ function btnPress() {
     let useUpper = g("useMaxBound").checked;
 
     let fName = "";
+    let isGeneric = false; // Assume this function do not contain generic expression roots
     //g("functionDisplay").innerHTML = d + ", x ∈ " +
     //    (ll ? "[" : "(") + lb + "," + ub + (ul ? "]" : ")") + ".";
     lb.replace("e", "ℯ");
@@ -154,6 +155,7 @@ function btnPress() {
 
     // Execute CAS command
     let realRoots = ggbApplet.evalCommandCAS(casCommand);
+    console.log(realRoots);
     let cRoots = parseInt(ggbApplet.evalCommandCAS("Length(" + realRoots + ")"));
 
     let signs = [];
@@ -189,9 +191,9 @@ function btnPress() {
         // Get the numeric value of the roots
         if (i < cRoots) {
             // We replace the k in case of generic root values from trigonometric functions
-            root["value"] = Number(ggbApplet.evalCommandCAS(("Numeric(RightSide(" + realRoots + "," + (i + 1) + "))").replace("k","*0")));
+            root["value"] = Number(ggbApplet.evalCommandCAS("Numeric(RightSide(" + realRoots + "," + (i + 1) + "))"));
 
-            let rootLabel = ggbApplet.evalCommandCAS("RightSide(" + realRoots + "," + (i + 1) + ")");
+            let rootLabel = ggbApplet.evalCommandCAS("Simplify(RightSide(" + realRoots + "," + (i + 1) + "))");
             rootLabel = rootLabel.replace("sqrt", "√").replace("(", "").replace(")", "");
             root["label"] = rootLabel;
 
@@ -199,29 +201,36 @@ function btnPress() {
             roots.push(root);
         }
     }
+
     // At this point, all required data is evaluated and calculated.
     // We just have to push this to the functions array
+    if(!realRoots.includes("k")) {
+        let function_dec = {
+            "name": fName,
+            "equ": fDec,
+            "roots": roots,
+            "signs": signs,
+            "limit": [intervalType, lb, ub, ll, ul]
+        };
+        functions.push(function_dec);
 
-    let function_dec = {
-        "name": fName,
-        "equ": fDec,
-        "roots": roots,
-        "signs": signs,
-        "limit": [intervalType, lb, ub, ll, ul]
-    };
-    functions.push(function_dec);
+        // Create a new div for the function render.
+        let newDom = document.createElement("div");
+        newDom.innerHTML = template_text;
 
-    // Create a new div for the function render.
-    let newDom = document.createElement("div");
-    newDom.innerHTML = template_text;
+        // Add the function to panel1
+        g("panel1").appendChild(newDom);
 
-    // Add the function to panel1
-    g("panel1").appendChild(newDom);
+        // Add the div to the MathJax queue for rendering
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub, newDom]);
 
-    // Add the div to the MathJax queue for rendering
-    MathJax.Hub.Queue(["Typeset", MathJax.Hub, newDom]);
-
-    // Remove border and render the functions
-    g("diagram-canvas").style.border = "none";
-    render();
+        // Remove border and render the functions
+        g("diagram-canvas").style.border = "none";
+        render();
+    } else {
+        alert(
+            "Generic roots created by harmonic functions are not yet supported." +
+            " To use harmonic functions, please use both the lower and upper bounds."
+        );
+    }
 }
