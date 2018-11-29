@@ -8,18 +8,22 @@ var modal;
  *     - name   : String
  *     - equ    : String
  *     - roots  : [{label - String, value - Number}]
- *     - signs  : Number[] // |roots|+1
+ *     - signs  : Number[] // roots.length+1
+ *     - limit  : Number[] // [interval, min, max, iMin, iMax]
  */
 var functions = [];
 
+
+// Used to inject LaTeX-formatted functions into the list
 var template = '<div class="media-object stack-for-small"><div class="media-object-section"><h5 id="#{id}">$$#{equ}#{interval}$$</h5></div></div>';
 
 function g(id) {
     return document.getElementById(id);
 }
 
+// Attempts to start CAS
 function startCAS() {
-    if(ggbActive) {
+    if (ggbActive) {
         let test = ggbApplet.evalCommandCAS("5+5");
         if (test === "?") {
             setTimeout(startCAS, 4000);
@@ -36,10 +40,12 @@ function startCAS() {
 }
 
 function confirmGBB() {
-    if(typeof ggbApplet === 'undefined') {
+    g("modal-text").innerHTML = "Starting Applet";
+    if (typeof ggbApplet === 'undefined') {
         setTimeout(confirmGBB, 500);
     } else {
         ggbActive = true;
+        g("modal-text").innerHTML = "Starting CAS";
         console.log("ggbApplet is active!");
     }
 }
@@ -64,7 +70,7 @@ function init() { // Both CAS and ggbApplet exists
 
 function postInit() {
     let canvas = g("renderTarget");
-    canvas.setAttribute("id","diagram-canvas");
+    canvas.setAttribute("id", "diagram-canvas");
     canvas.style.border = "#2199e8 solid 2px";
     modal.style.display = "none";
 }
@@ -86,47 +92,79 @@ function btnPress() {
     ub.replace("e", "ℯ");
     d.replace("e", "ℯ");
 
-    let interval = (useLower && !useUpper) ? "[#,⭢〉" : (!useLower && useUpper) ? "〈⭠,¤]" : "[#,¤]";
-    interval = interval.replace("#",ggbApplet.evalCommandCAS("Simplify("+lb+")"));
-    interval = interval.replace("¤",ggbApplet.evalCommandCAS("Simplify(" + ub + ")"));
-    if(!ll) interval = interval.replace("[", "〈");
-    if(!ul) interval = interval.replace("]", "〉");
+    let intervalType = 0; // 0 -> no interval, 1 -> only min, 2 only max, 3 both
+    let new_interval = "";
+    // If an interval is used, format it and display it correctly
+    if (useLower || useUpper) {
+        // Format the interval text based on user input
+        let interval = (useLower && !useUpper) ? "[#,⭢〉" : (!useLower && useUpper) ? "〈⭠,¤]" : "[#,¤]";
 
-    // Simplify the expression provided
-    d = ggbApplet.evalCommandCAS("Simplify("+d+")");
+        intervalType = (useLower && !useUpper) ? 1 : (!useLower && useUpper) ? 2 : 3;
 
-    let new_interval = ", x∈" + interval;
-    if(!useLower && !useUpper) new_interval="";
-    new_interval = new_interval.replace("sqrt", "√");
-    let template_text = template.replace("#{equ}", d/*.replace("/","\\frac")*/).replace("#{interval}", new_interval).replace("#{id}","function"+functions.length);
+        // Populate the interval
+        interval = interval.replace("#", ggbApplet.evalCommandCAS("Simplify(" + lb + ")"));
+        interval = interval.replace("¤", ggbApplet.evalCommandCAS("Simplify(" + ub + ")"));
+        if (!ll) interval = interval.replace("[", "〈");
+        if (!ul) interval = interval.replace("]", "〉");
 
-    if(d.includes("=")){
+        // Simplify the expression provided
+        d = ggbApplet.evalCommandCAS("Simplify(" + d + ")");
+
+        // Add the element-of symbol and some
+        new_interval = ", x∈" + interval;
+        new_interval = new_interval.replace("sqrt", "√");
+    }
+    let template_text = template.replace("#{equ}", d/*.replace("/","\\frac")*/).replace("#{interval}", new_interval).replace("#{id}", "function" + functions.length);
+
+    let fDec;
+
+    if (d.includes("=")) {
         fName = d.split("=")[0];
 
         // Fetch right-side of function
-        d = d.split("=")[1];
+        fDec = d.split("=")[1];
     } else {
         // There is no = sign, which means it's just an expression entered.
         fName = d;
+        fDec = d;
     }
 
-    let cmdLimit = lb+(ll?"<=":"<")+"x"+(ul?"<=":"<")+ub;
-    let casCommand = "Solve("+d+"=0,"+cmdLimit+")";
-    let realRoots         = ggbApplet.evalCommandCAS(casCommand);
+
+    // Create limit command
+    let cmdLimit = "";
+    if(intervalType === 3)
+        cmdLimit = lb + (ll ? "<=" : "<") + "x" + (ul ? "<=" : "<") + ub;
+    else if(intervalType === 2)
+        cmdLimit = "x"+ (ul ? "<=":"<") + ub;
+    else if(intervalType === 1)
+        cmdLimit = lb + (ll ? "<=" : "<") + "x";
+
+    // Create CAS command
+    let casCommand = "";
+    if (intervalType === 0)
+        casCommand = "Solve(" + fDec + "=0" + ")";
+    else
+        casCommand = "Solve(" + fDec + "=0," + cmdLimit + ")";
+
+    console.log("The limit command is: " + cmdLimit);
+    console.log("The CAS command is: " + casCommand);
+
+    // Execute CAS command
+    let realRoots = ggbApplet.evalCommandCAS(casCommand);
     let cRoots = parseInt(ggbApplet.evalCommandCAS("Length(" + realRoots + ")"));
 
     let signs = [];
     let roots = [];
 
 
-    for(let i = 0; i <= cRoots; i++) {
+    for (let i = 0; i <= cRoots; i++) {
         let test_value = "";
-        let command = "Substitute(" + d + ", x, #)";
+        let command = "Substitute(" + fDec + ", x, #)";
 
         // Get the value between roots
-        if(i === 0) {
+        if (i === 0) {
             // Check start
-            command = command.replace("#", ggbApplet.evalCommandCAS("RightSide("+ realRoots +",1)") +"-1");
+            command = command.replace("#", ggbApplet.evalCommandCAS("RightSide(" + realRoots + ",1)") + "-1");
 
         } else if (i === cRoots) {
             // Last Root
@@ -134,23 +172,24 @@ function btnPress() {
         } else {
             // Some interval in the middle
             command = command.replace("#", ggbApplet.evalCommandCAS(
-                "(RightSide(" + realRoots + "," + (i) + ") + RightSide(" + realRoots + "," + (i+1) + "))/2"
+                "(RightSide(" + realRoots + "," + (i) + ") + RightSide(" + realRoots + "," + (i + 1) + "))/2"
             )); // Gets the x-value of the point in between 2 roots.
         }
 
         // Get the normalized value of the value( ||test_value|| )
-        test_value = ggbApplet.evalCommandCAS(command + "/abs("+ command +")");
+        test_value = ggbApplet.evalCommandCAS(command + "/abs(" + command + ")");
 
         // The value should be very close(1e-15) to -1 or 1, so we round to get exact
         signs.push(Math.round(Number(test_value)));
 
         let root = {};
         // Get the numeric value of the roots
-        if(i < cRoots) {
-            root["value"] = Number(ggbApplet.evalCommandCAS("Numeric(RightSide(" + realRoots + "," + (i + 1) + "))"));
+        if (i < cRoots) {
+            // We replace the k in case of generic root values from trigonometric functions
+            root["value"] = Number(ggbApplet.evalCommandCAS(("Numeric(RightSide(" + realRoots + "," + (i + 1) + "))").replace("k","*0")));
 
-            let rootLabel = ggbApplet.evalCommandCAS("RightSide(" + realRoots + "," + (i+1) + ")");
-            rootLabel = rootLabel.replace("sqrt","√").replace("(","").replace(")","");
+            let rootLabel = ggbApplet.evalCommandCAS("RightSide(" + realRoots + "," + (i + 1) + ")");
+            rootLabel = rootLabel.replace("sqrt", "√").replace("(", "").replace(")", "");
             root["label"] = rootLabel;
 
             //console.log("Adding " + root.label + " to roots");
@@ -161,18 +200,25 @@ function btnPress() {
     // We just have to push this to the functions array
 
     let function_dec = {
-        "name"  : fName,
-        "equ"   : d,
-        "roots" : roots,
-        "signs" : signs
+        "name": fName,
+        "equ": fDec,
+        "roots": roots,
+        "signs": signs,
+        "limit": [intervalType, lb, ub, ll, ul]
     };
     functions.push(function_dec);
 
+    // Create a new div for the function render.
     let newDom = document.createElement("div");
     newDom.innerHTML = template_text;
-    g("panel1").appendChild(newDom);
-    MathJax.Hub.Queue(["Typeset",MathJax.Hub, newDom]);
 
+    // Add the function to panel1
+    g("panel1").appendChild(newDom);
+
+    // Add the div to the MathJax queue for rendering
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, newDom]);
+
+    // Remove border and render the functions
     g("diagram-canvas").style.border = "none";
     render();
 }
