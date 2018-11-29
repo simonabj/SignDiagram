@@ -14,9 +14,6 @@
     100% { transform: rotate(360deg); }
 }
 
-#app {
-}
-
 /* The Modal (background) */
 .modal {
     /*! display: none; */ /* Hidden by default */
@@ -33,6 +30,11 @@
 
 #ggbApplet, #web3d, #screenReader1, div[style*="visibility: hidden"] {
     display: none !important;
+}
+
+#info-panel {
+    overflow-scrolling: auto;
+    max-height: 265px;
 }
 
 /* Modal Content/Box */

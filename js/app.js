@@ -94,7 +94,7 @@ function btnPress() {
     d.replace("e", "ℯ");
 
     // If there is no function declaration
-    if(d.length < 1 || d.replace(" ", "").length < 1) d = "x^2";
+    if(d.length < 1 || d.replace(" ", "").length < 1) d = "f(x)=x^2-1";
 
     let intervalType = 0; // 0 -> no interval, 1 -> only min, 2 only max, 3 both
     let new_interval = "";
