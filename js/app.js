@@ -1,6 +1,6 @@
-var CASActive = false;
-var ggbActive = false;
-var modal;
+let CASActive = false;
+let ggbActive = false;
+let modal;
 
 
 /*
@@ -11,11 +11,12 @@ var modal;
  *     - signs  : Number[] // roots.length+1
  *     - limit  : Number[] // [interval, min, max, iMin, iMax]
  */
-var functions = [];
-
+let functions = [];
+let function_display = [];
+let currentId = 0;
 
 // Used to inject LaTeX-formatted functions into the list
-var template = '\\(#{equ}#{interval}\\)';
+const template = '\\(#{equ}#{interval}\\)';
 
 function g(id) {
     return document.getElementById(id);
@@ -73,6 +74,7 @@ function postInit() {
     canvas.setAttribute("id", "diagram-canvas");
     canvas.style.border = "#2199e8 solid 2px";
     modal.style.display = "none";
+    render(); // First time render
 }
 
 function btnPress() {
@@ -91,7 +93,7 @@ function btnPress() {
     d.replace("e", "ℯ");
 
     // If there is no function declaration
-    if(d.length < 1 || d.replace(" ", "").length < 1) d = "f(x)=x^2-1";
+    if (d.length < 1 || d.replace(" ", "").length < 1) d = "f(x)=x^2-1";
 
     let intervalType = 0; // 0 -> no interval, 1 -> only min, 2 only max, 3 both
     let new_interval = "";
@@ -134,11 +136,11 @@ function btnPress() {
 
     // Create limit command
     let cmdLimit = "";
-    if(intervalType === 3)
+    if (intervalType === 3)
         cmdLimit = lb + "<=" + "x" + "<=" + ub;
-    else if(intervalType === 2)
-        cmdLimit = "x"+ "<=" + ub;
-    else if(intervalType === 1)
+    else if (intervalType === 2)
+        cmdLimit = "x" + "<=" + ub;
+    else if (intervalType === 1)
         cmdLimit = lb + "<=" + "x";
 
     // Create CAS command
@@ -200,21 +202,22 @@ function btnPress() {
         }
     }
 
-    let lb_num = Number(ggbApplet.evalCommandCAS("Numeric("+lb+")"));
-    let ub_num = Number(ggbApplet.evalCommandCAS("Numeric("+ub+")"));
+    let lb_num = Number(ggbApplet.evalCommandCAS("Numeric(" + lb + ")"));
+    let ub_num = Number(ggbApplet.evalCommandCAS("Numeric(" + ub + ")"));
 
     // At this point, all required data is evaluated and calculated.
     // We just have to push this to the functions array
-    if(!realRoots.includes("k")) {
+    if (!realRoots.includes("k")) {
         let function_dec = {
-            "name": fName,
-            "equ": fDec,
-            "roots": roots,
-            "signs": signs,
-            "limit": [
+            id: currentId,
+            name: fName,
+            equ: fDec,
+            roots: roots,
+            signs: signs,
+            limit: [
                 intervalType,
-                {label:lb, value:lb_num},
-                {label:ub, value:ub_num}
+                {label: lb, value: lb_num},
+                {label: ub, value: ub_num}
                 , ll, ul
             ]
         };
@@ -223,36 +226,44 @@ function btnPress() {
         // Create a new div for the function render.
         let newDom = document.createElement("div");
         newDom.setAttribute("class", "media-object stack-for-small");
+        newDom.setAttribute("deleteID", "" + currentId);
 
         let mediaSection = document.createElement("div");
         mediaSection.setAttribute("class", "media-object-section");
 
         let closeSpan = document.createElement("span");
-        closeSpan.setAttribute("deleteID", ""+Number(functions.length-1));
-        closeSpan.setAttribute("onclick", 'alert("Not implemented yet! Please refresh page to remove functions. Sorry for the' +
-            ' inconvenience.");');
-
+        closeSpan.setAttribute("deleteID", "" + currentId);
+        closeSpan.setAttribute("onclick",
+            'let id = 0;\n' +
+            '        functions.forEach(f => {\n' +
+            '            if (f.id === Number(this.getAttribute("deleteID"))) {\n' +
+            '                id = f.id;\n' +
+            '                let node = document.querySelector("div[deleteID=\\"" + f.id + "\\"]");\n' +
+            '                node.parentNode.removeChild(node);\n' +
+            '            }\n' +
+            '        });\n' +
+            '        functions.splice(functions.map(e => e.id).indexOf(id),1);\n' +
+            '        render();'
+        );
         closeSpan.setAttribute("class", "deleteFunc");
         closeSpan.innerText = "×  ";
 
         let equationContainer = document.createElement("h5");
-        equationContainer.setAttribute("id", "function" + functions.length);
+        equationContainer.setAttribute("id", "function" + currentId);
         equationContainer.appendChild(closeSpan);
         equationContainer.innerHTML += template_text;
 
         mediaSection.appendChild(equationContainer);
 
-        newDom.appendChild(mediaSection);
 
+        newDom.appendChild(mediaSection);
         // Add the function to panel1
         g("panel1").appendChild(newDom);
-
 
         // Add the div to the MathJax queue for rendering
         MathJax.Hub.Queue(["Typeset", MathJax.Hub, newDom]);
 
-        // Remove border and render the functions
-        g("diagram-canvas").style.border = "none";
+        currentId++;
         render();
     } else {
         alert(

@@ -1,12 +1,20 @@
 .loader {
     margin: 50px;
     display: inline-block;
-    border: 16px solid #f3f3f3; /* Light grey */
-    border-top: 16px solid #3498db; /* Blue */
+    border: 12px solid #f3f3f3; /* Light grey */
+    border-top: 12px solid #3498db; /* Blue */
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    width: 100px;
+    height: 100px;
     animation: spin 2s linear infinite;
+}
+
+.
+
+#diagram-canvas {
+    padding: 5px;
+    border: none;
+    box-shadow: 0px 0px 6px 0px #2199e8;
 }
 
 body {
@@ -40,6 +48,12 @@ body {
 #info-panel {
     overflow-scrolling: auto;
     max-height: 265px;
+}
+
+#modal-text {
+    height: 70px;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 /* Modal Content/Box */

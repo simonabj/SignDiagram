@@ -22,7 +22,6 @@ function render() {
 
     let cRoots = 0; // Amount of roots in functions. Duplicates count as one
     let root_values = []; // The numeric value of each root
-    let roots = []; // The label of each root
 
     let x_values = []; // All x-values to be rendered
     let x_real = []; // All real values of x_values
@@ -57,7 +56,6 @@ function render() {
                 console.log("The root " + root.value + " is not registered!");
                 cRoots++;
                 root_values.push(root.value);
-                roots.push(root);
 
                 x_values.push(root); // Root has structure {label-String, value-Number}
             }
@@ -81,13 +79,8 @@ function render() {
         }
     });
 
-    // Sort the roots by their value in ascending order
-    roots.sort((a, b) => (a.value - b.value));
-
+    // Sort the x-values by their value in ascending order
     x_values.sort((a, b) => (a.value - b.value));
-
-    console.log(roots);
-    console.log(x_values);
 
     // Increase the length of the longest name for smooth lines
     longest_name *= 1.7;
@@ -146,7 +139,6 @@ function render() {
 
     // Render the commands given onto the canvas, finishing the beginPath();
     G.stroke();
-
 
     //// Here starts the function-signs rendering ////
 
