@@ -24,7 +24,6 @@
     <script type="text/javascript" src="js/ggbSettings.js"></script>
     <script src="js/geogebra.js"></script>
     <script src="js/render.js"></script>
-    <script src="js/tools.js"></script>
     <script src="js/app.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
             async></script>
@@ -39,7 +38,7 @@
 <br/>
 <div class="row">
     <div class="medium-6 columns">
-        <canvas id="renderTarget" width="650" height="350"></canvas>
+        <canvas id="diagram-canvas" width="650" height="350"></canvas>
     </div>
     <div class="medium-6 large-5 columns">
         <h3>Function Input</h3>
@@ -115,15 +114,23 @@
 
 <div class="column row" id="info-panel">
     <hr>
-    <ul class="tabs" data-tabs id="navigation-tabs">
-        <li class="tabs-title is-active"><a href="#panel1" aria-selected="true">Functions</a></li>
-        <!--<li class="tabs-title"><a href="#panel2">Similar Products</a></li>-->
-    </ul>
-    <div class="tabs-content" data-tabs-content="example-tabs">
-        <div class="tabs-panel is-active" id="panel1">
-            <!-- Functions will be rendered here! -->
-        </div>
-        <div class="tabs-panel" id="panel2">
+    <div class="grid-container">
+        <div class="grid-x grid-margin-x">
+            <div class="cell medium-3">
+                <ul class="tabs vertical" data-tabs id="navigation-tabs">
+                    <li class="tabs-title is-active"><a href="#panel1" aria-selected="true">Functions</a></li>
+                    <!--<li class="tabs-title"><a href="#panel2">Similar Products</a></li>-->
+                </ul>
+            </div>
+            <div class="cell medium-9">
+                <div class="tabs-content" data-tabs-content="navigation-tabs">
+                    <div class="tabs-panel is-active" id="panel1">
+                        <!-- Functions will be rendered here! -->
+                    </div>
+                    <div class="tabs-panel" id="panel2">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row column">
@@ -131,10 +138,20 @@
         <ul class="menu">
             <li>SignDiagram</li>
             <li><a href="https://github.com/DivineChili" target="_blank">DivineChili</a></li>
-            <li> –</li>
+            <li class="menu-separator"> –</li>
             <li><a href="https://github.com/DivineChili/SignDiagram/" target="_blank">Code</a></li>
             <li><a href="https://github.com/DivineChili/SignDiagram/wiki" target="_blank">Wiki</a></li>
             <li><a href="https://github.com/DivineChili/SignDiagram/issues" target="_blank">Issues</a></li>
+            <li class="right-element">
+                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                    <input type="hidden" name="cmd" value="_s-xclick"/>
+                    <input type="hidden" name="hosted_button_id" value="6E8Z7QRVYSJPN"/>
+                    <input type="image" src="https://www.paypalobjects.com/en_US/NO/i/btn/btn_donateCC_LG.gif"
+                           border="0" name="submit" title="PayPal - The safer, easier way to pay online!"
+                           alt="Donate with PayPal button"/>
+                    <img alt="" border="0" src="https://www.paypal.com/en_NO/i/scr/pixel.gif" width="1" height="1"/>
+                </form>
+            </li>
         </ul>
     </div>
 </div>

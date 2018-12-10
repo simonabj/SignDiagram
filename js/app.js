@@ -64,15 +64,11 @@ function preInit() {
 
 
 function init() { // Both CAS and ggbApplet exists
-
     console.log("Post Initialization Phase...");
     postInit();
 }
 
 function postInit() {
-    let canvas = g("renderTarget");
-    canvas.setAttribute("id", "diagram-canvas");
-    canvas.style.border = "#2199e8 solid 2px";
     modal.style.display = "none";
     render(); // First time render
 }

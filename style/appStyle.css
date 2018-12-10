@@ -9,12 +9,10 @@
     animation: spin 2s linear infinite;
 }
 
-.
-
 #diagram-canvas {
-    padding: 5px;
+    padding: 10px;
     border: none;
-    box-shadow: 0px 0px 6px 0px #2199e8;
+    box-shadow: 0 0 6px 0 #2199e8 !important;
 }
 
 body {
@@ -95,4 +93,8 @@ body {
 .deleteFunc:hover {
     color: black;
     cursor: pointer;
+}
+
+.right-element {
+    float: right;
 }
