@@ -9,6 +9,11 @@
     animation: spin 2s linear infinite;
 }
 
+body {
+    overflow: auto !important;
+    overflow-scrolling: auto;
+}
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -64,4 +69,16 @@
 
 #navigation-tabs a {
     font-size: 20px;
+}
+
+.deleteFunc {
+    font-size: 28px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    color: #aaaaaa;
+}
+
+.deleteFunc:hover {
+    color: black;
+    cursor: pointer;
 }

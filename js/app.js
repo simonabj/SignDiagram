@@ -15,7 +15,7 @@ var functions = [];
 
 
 // Used to inject LaTeX-formatted functions into the list
-var template = '<div class="media-object stack-for-small"><div class="media-object-section"><h5 id="#{id}">$$#{equ}#{interval}$$</h5></div></div>';
+var template = '\\(#{equ}#{interval}\\)';
 
 function g(id) {
     return document.getElementById(id);
@@ -86,9 +86,6 @@ function btnPress() {
     let useUpper = g("useMaxBound").checked;
 
     let fName = "";
-    let isGeneric = false; // Assume this function do not contain generic expression roots
-    //g("functionDisplay").innerHTML = d + ", x ∈ " +
-    //    (ll ? "[" : "(") + lb + "," + ub + (ul ? "]" : ")") + ".";
     lb.replace("e", "ℯ");
     ub.replace("e", "ℯ");
     d.replace("e", "ℯ");
@@ -118,6 +115,7 @@ function btnPress() {
         new_interval = ", x∈" + interval;
         new_interval = new_interval.replace("sqrt", "√");
     }
+    console.log(functions.length);
     let template_text = template.replace("#{equ}", d/*.replace("/","\\frac")*/).replace("#{interval}", new_interval).replace("#{id}", "function" + functions.length);
 
     let fDec;
@@ -137,11 +135,11 @@ function btnPress() {
     // Create limit command
     let cmdLimit = "";
     if(intervalType === 3)
-        cmdLimit = lb + (ll ? "<=" : "<") + "x" + (ul ? "<=" : "<") + ub;
+        cmdLimit = lb + "<=" + "x" + "<=" + ub;
     else if(intervalType === 2)
-        cmdLimit = "x"+ (ul ? "<=":"<") + ub;
+        cmdLimit = "x"+ "<=" + ub;
     else if(intervalType === 1)
-        cmdLimit = lb + (ll ? "<=" : "<") + "x";
+        cmdLimit = lb + "<=" + "x";
 
     // Create CAS command
     let casCommand = "";
@@ -202,6 +200,9 @@ function btnPress() {
         }
     }
 
+    let lb_num = Number(ggbApplet.evalCommandCAS("Numeric("+lb+")"));
+    let ub_num = Number(ggbApplet.evalCommandCAS("Numeric("+ub+")"));
+
     // At this point, all required data is evaluated and calculated.
     // We just have to push this to the functions array
     if(!realRoots.includes("k")) {
@@ -210,16 +211,42 @@ function btnPress() {
             "equ": fDec,
             "roots": roots,
             "signs": signs,
-            "limit": [intervalType, lb, ub, ll, ul]
+            "limit": [
+                intervalType,
+                {label:lb, value:lb_num},
+                {label:ub, value:ub_num}
+                , ll, ul
+            ]
         };
         functions.push(function_dec);
 
         // Create a new div for the function render.
         let newDom = document.createElement("div");
-        newDom.innerHTML = template_text;
+        newDom.setAttribute("class", "media-object stack-for-small");
+
+        let mediaSection = document.createElement("div");
+        mediaSection.setAttribute("class", "media-object-section");
+
+        let closeSpan = document.createElement("span");
+        closeSpan.setAttribute("deleteID", ""+Number(functions.length-1));
+        closeSpan.setAttribute("onclick", 'alert("Not implemented yet! Please refresh page to remove functions. Sorry for the' +
+            ' inconvenience.");');
+
+        closeSpan.setAttribute("class", "deleteFunc");
+        closeSpan.innerText = "×  ";
+
+        let equationContainer = document.createElement("h5");
+        equationContainer.setAttribute("id", "function" + functions.length);
+        equationContainer.appendChild(closeSpan);
+        equationContainer.innerHTML += template_text;
+
+        mediaSection.appendChild(equationContainer);
+
+        newDom.appendChild(mediaSection);
 
         // Add the function to panel1
         g("panel1").appendChild(newDom);
+
 
         // Add the div to the MathJax queue for rendering
         MathJax.Hub.Queue(["Typeset", MathJax.Hub, newDom]);
