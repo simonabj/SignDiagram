@@ -1,5 +1,5 @@
-function render() {
-    let canvas = g("diagram-canvas");
+function render(id) {
+    let canvas = g(id);
 
     // G is the graphics of the HTML5 Canvas 2D render engine
     let G = canvas.getContext("2d");
@@ -61,6 +61,7 @@ function render() {
             }
         });
 
+        x_real = x_values.map(e => e.value);
 
         if (
             (el.limit[0] === 1 || el.limit[0] === 3) && // 1 or 3
@@ -125,17 +126,17 @@ function render() {
         G.lineTo(x, height);
 
         // Write the value-label, centered over the line
-        G.fillText(x_labels[i], x, 14);
+        G.fillText(x_labels[i], x, 17);
         x_value_pos.push({label: x_values[i].label, value: x});
     }
 
     // Draw the x-axis with x-label
-    G.moveTo(25, 25);
-    G.lineTo(width, 25);
+    G.moveTo(25, 30);
+    G.lineTo(width, 30);
     G.textAlign = "left";
 
     // TODO: Make the axis label user-customizable
-    G.fillText("x", 2, 28);
+    G.fillText("x", 2, 32);
 
     // Render the commands given onto the canvas, finishing the beginPath();
     G.stroke();
@@ -143,7 +144,7 @@ function render() {
     //// Here starts the function-signs rendering ////
 
     // Define som start, stop and spacing values for the positions of the functions
-    let yStart = 30;
+    let yStart = 10;
     let yStop = height - 0;
     let ySpace = (yStop - yStart) / (cFunctions + 1);
 

@@ -29,7 +29,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
             async></script>
 </head>
-<body dir="ltr" tabindex="-1" onload="checkLogin()">
+<body dir="ltr" tabindex="-1">
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <article id="ggw"
          data-param-useBrowserForJS="false"
@@ -40,7 +40,7 @@
 <br/>
 <div class="row">
     <div class="medium-6 columns">
-        <canvas id="diagram-canvas" width="650" height="350"></canvas>
+        <canvas id="diagram-canvas"></canvas>
     </div>
     <div class="medium-6 large-5 columns">
         <h3>Function Input</h3>
@@ -53,9 +53,9 @@
             </div>
         </div>
         <div class="row">
-            <div class="small-4 columns">
-                <label for="useMinBound"></label><input type="checkbox" id="useMinBound"/>
-                <label for="functionMinLimit" class="middle">Lower Bound: </label>
+            <div class="small-4 columns" id="useMinBoundContainer">
+                <input type="checkbox" id="useMinBound"/>
+                <label for="useMinBound" class="middle">Lower Bound: </label>
             </div>
             <div class="small-4 columns">
                 <input type="text" id="functionMinLimit" placeholder=" --- " disabled="disabled">
@@ -68,9 +68,9 @@
             </div>
         </div>
         <div class="row">
-            <div class="small-4 columns">
-                <label for="useMaxBound"></label><input type="checkbox" id="useMaxBound"/>
-                <label for="functionMaxLimit" class="middle">Upper Bound: </label>
+            <div class="small-4 columns" id="useMaxBoundContainer">
+                <input type="checkbox" id="useMaxBound"/>
+                <label for="useMaxBound" class="middle">Upper Bound: </label>
             </div>
             <div class="small-4 columns">
                 <input type="text" id="functionMaxLimit" placeholder=" --- " disabled="disabled">
@@ -92,6 +92,7 @@
             <ul class="tabs vertical information-tabs" data-tabs id="navigation-tabs">
                 <li class="tabs-title is-active"><a href="#panel1" aria-selected="true">Functions</a></li>
                 <li class="tabs-title"><a href="#panel2">CAS Commands</a></li>
+                <li class="tabs-title"><a href="#panel3">Tools & Settings</a></li>
             </ul>
         </div>
         <div class="medium-9 columns">
@@ -100,6 +101,15 @@
                     <!-- Functions will be rendered here! -->
                 </div>
                 <div class="tabs-panel information-tabs" id="panel2">
+                    <!-- CAS functions will be inserted here -->
+                </div>
+                <div class="tabs-panel information-tabs" id="panel3">
+                    <div class="media-object stack-for-small">
+                        <a onclick="render(Properties.primary_render_target);" class="button medium">ReRender</a>
+                    </div>
+                    <div class="media-object stack-for-small">
+                        <a onclick="drawSizedImage()" class="button medium">Render Sized Image</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -114,9 +124,11 @@
             <li><a href="https://github.com/DivineChili/SignDiagram/wiki" target="_blank">Wiki</a></li>
             <li><a href="https://github.com/DivineChili/SignDiagram/issues" target="_blank">Issues</a></li>
             <li class="menu-separator"> –</li>
-            <li><a href="https://github.com/DivineChili/SignDiagram/blob/master/release/SignDiagram-0-82-0a.zip?raw=true" target="_self">Download</a></li>
+            <li>
+                <a href="https://github.com/DivineChili/SignDiagram/blob/master/release/SignDiagram-0-82-0a.zip?raw=true"
+                   target="_self">Download</a></li>
             <li class="right-element">
-                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
                     <input type="hidden" name="cmd" value="_s-xclick"/>
                     <input type="hidden" name="hosted_button_id" value="6E8Z7QRVYSJPN"/>
                     <input type="image" src="https://www.paypalobjects.com/en_US/NO/i/btn/btn_donateCC_LG.gif"
@@ -137,11 +149,16 @@
     <div class="modal" id="appModal">
         <!-- MODAL CONTENT -->
         <div class="modal-content">
-            <div id="modal-description">
-                <h1 id="modal-text">Starting CAS</h1>
+            <div id="modal-app-name">
+                <h2>Sign Diagram</h2>
                 <span>Version <span id="versionDisplay"></span></span>
             </div>
-            <div class="loader"></div>
+            <div id="modal-load">
+                <div id="modal-description">
+                    <h3 id="modal-text">Starting CAS</h3>
+                </div>
+                <div class="loader"></div>
+            </div>
         </div>
     </div>
 </div>

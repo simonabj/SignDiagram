@@ -1,6 +1,7 @@
 const Properties = {
-    version: "0.82.0-Alpha",
+    version: "0.90-Alpha",
     URLS: {
         ggbCodec: "https://cdn.geogebra.org/apps/latest/",
-    }
+    },
+    primary_render_target: "diagram-canvas"
 };

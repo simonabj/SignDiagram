@@ -4,9 +4,7 @@
 
 let bWritingFunction = false;
 
-// Event listener for Lower Limit control
-g("useMinBound").addEventListener("change", (event) => {
-    console.log(!event.target.checked ? "Disabled" : "Enabled");
+function toggleUseMinBound(event) {
     if (!event.target.checked) {
         g("functionMinLimit").setAttribute("disabled", "disabled");
         g("functionMinLimit").setAttribute("placeholder", " --- ");
@@ -16,11 +14,9 @@ g("useMinBound").addEventListener("change", (event) => {
         g("functionMinLimit").removeAttribute("disabled");
         g("includeMinLimit").removeAttribute("disabled");
     }
-});
+}
 
-// Event listener for Upper Limit control
-g("useMaxBound").addEventListener("change", (event) => {
-    console.log(!event.target.checked ? "Disabled" : "Enabled");
+function toggleUseMaxBound(event) {
     if (!event.target.checked) {
         g("functionMaxLimit").setAttribute("disabled", "disabled");
         g("functionMaxLimit").setAttribute("placeholder", " --- ");
@@ -30,6 +26,27 @@ g("useMaxBound").addEventListener("change", (event) => {
         g("functionMaxLimit").removeAttribute("disabled");
         g("includeMaxLimit").removeAttribute("disabled");
     }
+}
+
+// Event listener for Lower Limit control
+g("useMinBound").addEventListener("change", toggleUseMinBound);
+
+// Event listener for Upper Limit control
+g("useMaxBound").addEventListener("change", toggleUseMaxBound);
+
+// Event listener(s) for limit control
+g("functionMaxLimit").addEventListener("focusin", () => {
+    bWritingFunction = true;
+});
+g("functionMaxLimit").addEventListener("focusout", () => {
+    bWritingFunction = false;
+});
+
+g("functionMinLimit").addEventListener("focusin", () => {
+    bWritingFunction = true;
+});
+g("functionMinLimit").addEventListener("focusout", () => {
+    bWritingFunction = false;
 });
 
 // Event listener(s) for Function Declaration input
@@ -41,6 +58,7 @@ g("functionInput").addEventListener("focusout", (event) => {
     event.target.placeholder = "f(x)=x^2-1";
     bWritingFunction = true;
 });
+
 
 // Global window listeners
 
@@ -56,10 +74,9 @@ window.addEventListener("keydown", (event) => {
         if(event.which === 57) { // The '('-key
             //TODO: Complete auto-bracing
         }
+        // Enter key calls add function
+        if(event.which === 13) {
+            addFunction();
+        }
     }
-});
-
-// Global load
-window.addEventListener("load", e => {
-    g("versionDisplay").innerText = Properties.version;
 });

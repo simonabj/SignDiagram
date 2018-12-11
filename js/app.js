@@ -1,5 +1,7 @@
 let CASActive = false;
 let ggbActive = false;
+let lastWidth = 0;
+let lastHeight = 0;
 let modal;
 
 
@@ -50,11 +52,26 @@ function confirmGBB() {
     }
 }
 
+function fixCanvasWidth() {
+    // Make canvas visually fill the positioned parent
+    let canvas = g(Properties.primary_render_target);
+    canvas.style.width ='90%';
+    canvas.style.height='90%';
+    // ...then set the internal size to match
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+}
+
 function preInit() {
+    g("versionDisplay").innerText = Properties.version;
+
     modal = document.getElementById('appModal');
     modal.style.display = "block";
 
+    checkLogin();
+
     console.log("Waiting for ggbApplet");
+
     confirmGBB();
 
     console.log("Starting CAS!");
@@ -64,12 +81,122 @@ function preInit() {
 
 function init() { // Both CAS and ggbApplet exists
     console.log("Post Initialization Phase...");
+
+    fixCanvasWidth();
+
     postInit();
 }
 
 function postInit() {
     modal.style.display = "none";
-    render(); // First time render
+    render(Properties.primary_render_target); // First time render
+}
+
+function drawSizedImage() {
+    let newModal = document.createElement("div");
+    newModal.setAttribute("class","modal-content");
+
+    let modalContent = document.createElement("div");
+
+    let inputWidth = document.createElement("input");
+    inputWidth.setAttribute("type","number");
+    inputWidth.setAttribute("min",50);
+    inputWidth.setAttribute("max",1920);
+    inputWidth.setAttribute("value",lastWidth === 0 ? 150 : lastWidth);
+    inputWidth.setAttribute("id","inputWidth");
+
+    let inputHeight = document.createElement("input");
+    inputHeight.setAttribute("type","number");
+    inputHeight.setAttribute("min",50);
+    inputHeight.setAttribute("max",1080);
+    inputHeight.setAttribute("value",lastHeight === 0 ? 100 : lastHeight);
+    inputHeight.setAttribute("id", "inputHeight");
+
+    let labelWidth = document.createElement("label");
+    labelWidth.setAttribute("for","inputWidth");
+    labelWidth.innerHTML = "Image Width: ";
+
+    let labelHeight = document.createElement("label");
+    labelHeight.setAttribute("for", "inputHeight");
+    labelHeight.innerHTML = "Image Height: ";
+
+    let createButton = document.createElement("a");
+    createButton.innerHTML = "Render Image";
+    createButton.setAttribute("class","button medium");
+
+    let cancelButton = document.createElement("span");
+    cancelButton.setAttribute("class", "cancel");
+    cancelButton.innerHTML = "×";
+    cancelButton.style.color = "#aaa";
+    cancelButton.style.fontSize = "28px";
+    cancelButton.style.fontWeight = "bold";
+
+
+    cancelButton.onclick = function () {
+        modal.style.display = "none";
+    }
+
+    modalContent.appendChild(cancelButton);
+    modalContent.appendChild(labelWidth);
+    modalContent.appendChild(inputWidth);
+    modalContent.appendChild(labelHeight);
+    modalContent.appendChild(inputHeight);
+    modalContent.appendChild(createButton);
+
+    modalContent.style.display = "flex";
+    modalContent.style.flexDirection = "column";
+    modalContent.style.width = "400px";
+    modalContent.style.justifyContent = "center";
+
+    newModal.appendChild(modalContent);
+
+
+    modal.removeChild(document.querySelector("#appModal > div"));
+    modal.appendChild(newModal);
+    modal.style.display = "block";
+
+
+    createButton.onclick = function() {
+
+        let newRenderTarget = document.createElement("canvas");
+        newRenderTarget.setAttribute("id", "outputCanvas");
+
+        newRenderTarget.width  = g("inputWidth").value;
+        newRenderTarget.height = g("inputHeight").value;
+
+        lastWidth  = g("inputWidth").value;
+        lastHeight = g("inputHeight").value;
+
+        modal.removeChild(document.querySelector("#appModal > div"));
+
+        let newModal = document.createElement("div");
+        newModal.setAttribute("class","modal-content");
+
+        let content = document.createElement("div");
+
+        content.style.display = "flex";
+        content.style.justifyContent = "center";
+        content.style.alignContent = "center";
+        content.style.height = "auto";
+
+        newModal.style.display = "block";
+        newModal.style.padding = "0px";
+
+        newModal.appendChild(newRenderTarget);
+        content.appendChild(newModal);
+        modal.appendChild(content);
+
+        render("outputCanvas");
+        alert("Right-click to save image, or left-click anywhere to return");
+        setTimeout(function() {
+            modal.onclick = function() {
+                modal.style.display = "none";
+                modal.onclick = "";
+            };
+        }, 2000);
+
+    }
+
 }
 
 function addFunction() {
@@ -132,11 +259,11 @@ function addFunction() {
     // Create limit command
     let cmdLimit = "";
     if (intervalType === 3)
-        cmdLimit = lb + "<=" + "x" + "<=" + ub;
+        cmdLimit = lb + " <= " + "x" + " <= " + ub;
     else if (intervalType === 2)
-        cmdLimit = "x" + "<=" + ub;
+        cmdLimit = "x" + " <= " + ub;
     else if (intervalType === 1)
-        cmdLimit = lb + "<=" + "x";
+        cmdLimit = lb + " <= " + "x";
 
     // Create CAS command
     let casCommand = "";
@@ -150,6 +277,12 @@ function addFunction() {
 
     // Execute CAS command
     let realRoots = ggbApplet.evalCommandCAS(casCommand);
+
+    g("panel2").innerHTML += "<span>"+ d + ": " + casCommand.replace("=0", "=0") + " ⇒ "+ realRoots + "</span><br/>";
+    g("panel2").innerHTML += "<span>"+ d + ": " + casCommand.replace("=0",">0")  + " ⇒ " + ggbApplet.evalCommandCAS(casCommand.replace("=0",">0")) + "</span><br/>";
+    g("panel2").innerHTML += "<span>"+ d + ": " + casCommand.replace("=0","<0")  + " ⇒ " + ggbApplet.evalCommandCAS(casCommand.replace("=0",">0")) + "</span><br/>";
+    g("panel2").innerHTML += "<br/>";
+
     console.log(realRoots);
     let cRoots = parseInt(ggbApplet.evalCommandCAS("Length(" + realRoots + ")"));
 
@@ -197,12 +330,24 @@ function addFunction() {
         }
     }
 
+    lb = ggbApplet.evalCommandCAS(lb);
+    ub = ggbApplet.evalCommandCAS(ub);
     let lb_num = Number(ggbApplet.evalCommandCAS("Numeric(" + lb + ")"));
     let ub_num = Number(ggbApplet.evalCommandCAS("Numeric(" + ub + ")"));
 
     // At this point, all required data is evaluated and calculated.
     // We just have to push this to the functions array
-    if (!realRoots.includes("k")) {
+    try {
+
+        // Error handling and security
+
+        if (realRoots.includes("k")) throw "Generic roots created by harmonic functions are not yet supported." +
+        " To use harmonic functions, please use both the lower and upper bounds.";
+        if(lb_num >= ub_num) throw "Lower bound cannot be greater than upper bound";
+        if((intervalType === 1 || intervalType === 3) && !isFinite(lb_num)) throw "There is a problem with your lower bound.";
+        if((intervalType === 2 || intervalType === 3) && !isFinite(ub_num)) throw "There is a problem with your upper bound.";
+
+
         let function_dec = {
             id: currentId,
             name: fName,
@@ -256,17 +401,15 @@ function addFunction() {
         g("panel1").appendChild(newDom);
         g("panel1").scrollTop = g("panel1").scrollHeight;
 
+        // Switch to function tab
         $("#panel1-label").click();
 
         // Add the div to the MathJax queue for rendering
         MathJax.Hub.Queue(["Typeset", MathJax.Hub, newDom]);
 
         currentId++;
-        render();
-    } else {
-        alert(
-            "Generic roots created by harmonic functions are not yet supported." +
-            " To use harmonic functions, please use both the lower and upper bounds."
-        );
+        render(Properties.primary_render_target);
+    } catch(exception) {
+        alert(exception);
     }
 }
