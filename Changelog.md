@@ -1,4 +1,11 @@
-#Version 0.90a
+# Version 0.90.1a
+## User Visible Changes
+### Additions & Tweaks
+* Fixed wrapping in CAS Commands tab
+* Changed to using name of function instead of declaration in CAS Commands tab
+* Converted Changelog to Markdown for better reading
+
+# Version 0.90a
 ## User Visible Changes
 
 ### Additions & Tweaks

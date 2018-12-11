@@ -278,9 +278,9 @@ function addFunction() {
     // Execute CAS command
     let realRoots = ggbApplet.evalCommandCAS(casCommand);
 
-    g("panel2").innerHTML += "<span>"+ d + ": " + casCommand.replace("=0", "=0") + " ⇒ "+ realRoots + "</span><br/>";
-    g("panel2").innerHTML += "<span>"+ d + ": " + casCommand.replace("=0",">0")  + " ⇒ " + ggbApplet.evalCommandCAS(casCommand.replace("=0",">0")) + "</span><br/>";
-    g("panel2").innerHTML += "<span>"+ d + ": " + casCommand.replace("=0","<0")  + " ⇒ " + ggbApplet.evalCommandCAS(casCommand.replace("=0",">0")) + "</span><br/>";
+    g("panel2").innerHTML += "<span>"+ fName + ": " + casCommand.replace("=0", "=0") + " ⇒ "+ realRoots + "</span><br/>";
+    g("panel2").innerHTML += "<span>"+ fName + ": " + casCommand.replace("=0",">0")  + " ⇒ " + ggbApplet.evalCommandCAS(casCommand.replace("=0",">0")) + "</span><br/>";
+    g("panel2").innerHTML += "<span>"+ fName + ": " + casCommand.replace("=0","<0")  + " ⇒ " + ggbApplet.evalCommandCAS(casCommand.replace("=0",">0")) + "</span><br/>";
     g("panel2").innerHTML += "<br/>";
 
     console.log(realRoots);
