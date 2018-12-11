@@ -383,7 +383,7 @@ function addFunction() {
             '            }\n' +
             '        });\n' +
             '        functions.splice(functions.map(e => e.id).indexOf(id),1);\n' +
-            '        render();'
+            '        render(Properties.primary_render_target);'
         );
         closeSpan.setAttribute("class", "deleteFunc");
         closeSpan.innerText = "×  ";
