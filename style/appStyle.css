@@ -15,6 +15,18 @@
     box-shadow: 0 0 6px 0 #2199e8 !important;
 }
 
+#function-information {
+    height: 160px;
+}
+
+.information-tabs {
+    height: 160px;
+}
+
+.tabs-panel {
+    overflow-scrolling: auto;
+}
+
 body {
     overflow: auto !important;
     overflow-scrolling: auto;
@@ -43,13 +55,12 @@ body {
     display: none !important;
 }
 
-#info-panel {
-    overflow-scrolling: auto;
-    max-height: 265px;
+#modal-text {
+    height: 80px;
 }
 
-#modal-text {
-    height: 70px;
+#modal-description {
+    height: 96px;
     margin-top: auto;
     margin-bottom: auto;
 }
@@ -63,7 +74,7 @@ body {
     
     
     background-color: #fefefe;
-    margin: 15% 0px; /* 15% from the top and centered */
+    margin: 15% 0; /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
     width: auto; /* Could be more or less, depending on screen size */
@@ -73,7 +84,7 @@ body {
     margin-right: 10px;
 }
 
-#panel1 {
+div[id^="panel"] {
     max-height: 212px;
     overflow-y: scroll;
     overflow-x: auto;
@@ -96,5 +107,6 @@ body {
 }
 
 .right-element {
+    top: 0;
     float: right;
 }

@@ -54,13 +54,13 @@ function perspective(id, name) {
             ggbApplet.setPerspective(id + "");
         }
     }
-    var label = e(name);
+    let label = e(name);
     if (label) {
         parentTable(label).className += " perspectiveHighlighted";
     }
     if (name && window.history && window.history.pushState && name !== "picker" && location.host.indexOf("geogebra") >= 0 &&
         location.href.indexOf("?") < 0 && !location.pathname.match(/\/.*\/.+/) && !isLocalhost()) {
-        var unbundled = name === "graphing" || name === "geometry" || name === "whiteboard" || name === "notes" || name === "3d" || name === "cas" || name === "scientific";
+        let unbundled = name === "graphing" || name === "geometry" || name === "whiteboard" || name === "notes" || name === "3d" || name === "cas" || name === "scientific";
         if (name !== "classic" && (location.pathname.indexOf("classic") > 0 || !unbundled)) {
             name = "classic#" + name;
         }
@@ -70,12 +70,12 @@ function perspective(id, name) {
 }
 
 function getURLparam(param) {
-    var parts = location.href.split("?");
+    let parts = location.href.split("?");
     if (parts.length < 2) {
         return null;
     }
-    params = parts[1].split("&");
-    for (var i = 0; i < params.length; i++) {
+    let params = parts[1].split("&");
+    for (let i = 0; i < params.length; i++) {
         if (params[i].indexOf(param + "=") === 0) {
             return params[i].substring(param.length + 1);
         }
@@ -84,7 +84,7 @@ function getURLparam(param) {
 }
 
 function insertScript() {
-    var app = document.createElement("script");
+    let app = document.createElement("script");
     app.setAttribute("src", codebase + module + "/js/webfont.js");
     document.head.appendChild(app);
     app = document.createElement("script");
@@ -129,7 +129,7 @@ function installWorker() {
 
 function checkLogin() {
     installWorker();
-    var wait = false;
+    let wait = false;
     wait || insertScript();
     perspective(false, "C");
 }

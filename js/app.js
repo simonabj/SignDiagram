@@ -12,7 +12,6 @@ let modal;
  *     - limit  : Number[] // [interval, min, max, iMin, iMax]
  */
 let functions = [];
-let function_display = [];
 let currentId = 0;
 
 // Used to inject LaTeX-formatted functions into the list
@@ -73,7 +72,7 @@ function postInit() {
     render(); // First time render
 }
 
-function btnPress() {
+function addFunction() {
     let d = g("functionInput").value;
     let lb = g("functionMinLimit").value;
     let ub = g("functionMaxLimit").value;
@@ -255,6 +254,9 @@ function btnPress() {
         newDom.appendChild(mediaSection);
         // Add the function to panel1
         g("panel1").appendChild(newDom);
+        g("panel1").scrollTop = g("panel1").scrollHeight;
+
+        $("#panel1-label").click();
 
         // Add the div to the MathJax queue for rendering
         MathJax.Hub.Queue(["Typeset", MathJax.Hub, newDom]);
