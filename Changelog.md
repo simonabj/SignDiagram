@@ -18,7 +18,7 @@
 
 ## System Changes
 
-## Additions & Tweaks
+### Additions & Tweaks
 * Function-adding now checks for validation using try-catch instead of elifs.
 * More CSS-classes and IDs surrounding startup modal.
 * More clauses added to function validation
