@@ -1,3 +1,8 @@
+# Version 0.90.2a
+## System Changes
+* Restricted MathJax access to PNG-fonts
+* Removed approximately 30.000(12MB) of image fonts to improve file handling  
+
 # Version 0.90.1a
 ## User Visible Changes
 ### Additions & Tweaks
