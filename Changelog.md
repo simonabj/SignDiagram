@@ -1,3 +1,12 @@
+# Version 0.90.3a
+## User Visible Changes
+* Division and grouping brackets now render better
+* Fixed bug where MathJax stopped rendering
+## System Changes
+* Removed unused MathJax config values
+* Changed default MathJax config file
+* Disabled CAS-simplification of user input
+
 # Version 0.90.2a
 ## System Changes
 * Restricted MathJax access to PNG-fonts

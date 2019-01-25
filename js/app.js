@@ -17,7 +17,7 @@ let functions = [];
 let currentId = 0;
 
 // Used to inject LaTeX-formatted functions into the list
-const template = '\\(#{equ}#{interval}\\)';
+const template = '`#{equ}#{interval}`';
 
 function g(id) {
     return document.getElementById(id);
@@ -222,25 +222,25 @@ function addFunction() {
     // If an interval is used, format it and display it correctly
     if (useLower || useUpper) {
         // Format the interval text based on user input
-        let interval = (useLower && !useUpper) ? "[#,⭢〉" : (!useLower && useUpper) ? "〈⭠,¤]" : "[#,¤]";
+        let interval = (useLower && !useUpper) ? "[#,⭢:)" : (!useLower && useUpper) ? "(:⭠,¤]" : "[#,¤]";
 
         intervalType = (useLower && !useUpper) ? 1 : (!useLower && useUpper) ? 2 : 3;
 
         // Populate the interval
         interval = interval.replace("#", ggbApplet.evalCommandCAS("Simplify(" + lb + ")"));
         interval = interval.replace("¤", ggbApplet.evalCommandCAS("Simplify(" + ub + ")"));
-        if (!ll) interval = interval.replace("[", "〈");
-        if (!ul) interval = interval.replace("]", "〉");
+        if (!ll) interval = interval.replace("[", "(:");
+        if (!ul) interval = interval.replace("]", ":)");
 
         // Simplify the expression provided
-        d = ggbApplet.evalCommandCAS("Simplify(" + d + ")");
+        //TODO: Make simplify togglable
+		//d = ggbApplet.evalCommandCAS("Simplify(" + d + ")");
 
         // Add the element-of symbol and some
-        new_interval = ", x∈" + interval;
-        new_interval = new_interval.replace("sqrt", "√");
+        new_interval = ", x in " + interval;
     }
     console.log(functions.length);
-    let template_text = template.replace("#{equ}", d/*.replace("/","\\frac")*/).replace("#{interval}", new_interval).replace("#{id}", "function" + functions.length);
+    let template_text = template.replace("#{equ}", d).replace("#{interval}", new_interval).replace("#{id}", "function" + functions.length);
 
     let fDec;
 
@@ -386,7 +386,7 @@ function addFunction() {
             '        render(Properties.primary_render_target);'
         );
         closeSpan.setAttribute("class", "deleteFunc");
-        closeSpan.innerText = "×  ";
+        closeSpan.innerText = "× ";
 
         let equationContainer = document.createElement("h5");
         equationContainer.setAttribute("id", "function" + currentId);
