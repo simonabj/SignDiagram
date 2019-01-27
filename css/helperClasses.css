@@ -1,0 +1,34 @@
+p, h3, h1 {
+    margin: 0;
+}
+
+.no-em {
+    font-style: normal !important;
+}
+
+.no-bold {
+    font-weight: normal !important;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.header {
+    margin: 0;
+    font-family: Castellar, Tahoma, sans-serif;
+}
+
+.input-group,
+.input-group-field,
+.input-group-label {
+    margin-bottom: 4px;
+}
+
+.no-margs {
+    margin: 0 !important;
+}
+
+.margin-small {
+    margin: .3rem;
+}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="no-js" lang="en" dir="ltr">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-130127453-1"></script>
     <script>
@@ -14,18 +14,31 @@
         gtag('config', 'UA-130679126-1');
     </script>
 
-    <meta charset="utf-8"/>
     <title>Sign Diagram</title>
-    <link rel="stylesheet" href="style/appStyle.css"/>
-    <link rel="stylesheet" href="https://dhbhdrzi4tiry.cloudfront.net/cdn/sites/foundation.min.css">
 
+    <link rel="stylesheet" href="css/appStyle.css"/>
+    <link rel="stylesheet" href="css/foundation.css">
+    <link rel="stylesheet" href="css/helperClasses.css">
+    <link rel="stylesheet" href="css/navigation.css">
+
+
+    <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1"/>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    <script type="text/javascript" src="js/properties.js"></script>
-    <script type="text/javascript" src="js/ggbSettings.js"></script>
-    <script src="js/geogebra.js"></script>
+    <script type="text/javascript" src="js/application/properties.js"></script>
+    <script type="text/javascript" src="js/geogebra/ggbSettings.js"></script>
+    <script src="js/geogebra/geogebra.js"></script>
+
+
     <script src="js/render.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/application/util.js"></script>
+
+    <script src="js/application/preInit.js"></script>
+    <script src="js/application/init.js"></script>
+    <script src="js/application/postInit.js"></script>
+
+    <script src="js/application/app.js"></script>
 
     <script type="text/x-mathjax-config">
       MathJax.Hub.Config({
@@ -34,123 +47,363 @@
             imageFont: null
         }
       });
+
     </script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=AM_CHTML"
             async></script>
+
+
 </head>
 <body dir="ltr" tabindex="-1">
-<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<script src="js/vendor/jquery.js"></script>
+<script src="js/vendor/what-input.js"></script>
+
+<!--<script src="https://dhbhdrzi4tiry.cloudfront.net/cdn/sites/foundation.js"></script> -->
+<script src="js/vendor/foundation.js"></script>
+
 <article id="ggw"
          data-param-useBrowserForJS="false"
          data-param-app="true"
          data-param-showAppsPicker="true">
 </article>
-<br/>
-<br/>
-<div class="row">
-    <div class="medium-6 columns">
-        <canvas id="diagram-canvas"></canvas>
+
+<div class="grid-frame" id="container">
+    <header class="grid-container">
+        <div class="grid-y align-center-middle">
+            <h1 class="cell header">Sign Diagram</h1>
+            <div class="grid-x grid-margin-x">
+                <p class="cell subheader italic shrink">Version: <span class="versionDisplay"></span></p>
+                <p class="cell subheader italic shrink">By Simon Andreas Bjørn</p>
+            </div>
+        </div>
+    </header>
+    <hr>
+    <div class="grid-x align-justify grid-padding-x grid-margin-y"> <!-- Content -->
+        <div class="cell auto callout"> <!-- Add Function box -->
+
+            <div class="text-center">
+                <h4>Add function menu</h4>
+            </div>
+            <hr>
+            <ul class="tabs menu expanded text-center" id="proficiency_select"
+                data-tabs data-active-collapse="true">
+                <li class="tabs-title"><a href="#SimplePanel">Simple</a></li>
+                <li class="tabs-title"><a href="#AdvancedPanel">Advanced</a></li>
+            </ul>
+
+            <div class="tabs-content" data-tabs-content="proficiency_select">
+
+                <div class="tabs-panel" id="SimplePanel">
+                    <div class="medium-6 large-5 grid-y grid-margin-y">
+                        <div class="cell">
+                            <h3>Add Function <span class="h4 secondary subheader"><em>Simple</em></span></h3>
+                            <p class="subheader"><em>Only basic controls available</em></p>
+                        </div>
+                        <div class="cell">
+                            <h4>Declaration</h4>
+                            <label>
+                                <div class="input-group">
+                                    <span class="input-group-label">f(x) =</span>
+                                    <input type="text" class="input-group-field" aria-describedby="functionNameInput"
+                                           placeholder="x^2-1" id="functionInput">
+                                </div>
+                            </label>
+                            <p class="help-text secondary" id="functionNameInput">Function declaration, e.g. 2x-1</p>
+                        </div>
+                        <div class="cell">
+                            <div class="grid-y">
+                                <div class="cell">
+                                    <h4>Lower Bound</h4>
+                                    <label>
+                                        <p class="help-text" id="lowerBoundDesc">Use lower bound, value, open/closed
+                                            interval <span
+                                                    class="no-em">( ⟨ / [ )</span></p>
+                                        <div class="input-group" aria-describedby="lowerBoundDesc">
+                                            <div class="input-group-button switch large">
+                                                <input type="checkbox" class="switch-input" id="useMinBound">
+                                                <label for="useMinBound" class="switch-paddle">
+                                                    <span class="switch-active" aria-hidden="true">Use</span>
+                                                    <span class="switch-inactive" aria-hidden="true">Off</span>
+                                                </label>
+                                            </div>
+                                            <input type="text" id="functionMinLimit"
+                                                   class="input-group-field medium auto"
+                                                   placeholder=" - - - ">
+                                            <div class="input-group-button switch large">
+                                                <input type="checkbox" class="switch-input" id="includeMinLimit">
+                                                <label for="includeMinLimit" class="switch-paddle">
+                                                    <span class="switch-active primary" aria-hidden="true">[</span>
+                                                    <span class="switch-inactive success" aria-hidden="true">⟨</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="cell">
+                                    <h4>Upper Bound</h4>
+                                    <label>
+                                        <p class="help-text" id="upperBoundDesc">Use lower bound, value, open/closed
+                                            interval <span
+                                                    class="no-em">( ⟩ / ] )</span></p>
+                                        <div class="input-group" aria-describedby="upperBoundDesc">
+                                            <div class="input-group-button switch large">
+                                                <input type="checkbox" class="switch-input" id="useMaxBound">
+                                                <label for="useMaxBound" class="switch-paddle">
+                                                    <span class="switch-active" aria-hidden="true">Use</span>
+                                                    <span class="switch-inactive" aria-hidden="true">Off</span>
+                                                </label>
+                                            </div>
+                                            <input type="text" id="functionMaxLimit"
+                                                   class="input-group-field medium auto"
+                                                   placeholder=" - - - ">
+                                            <div class="input-group-button switch large">
+                                                <input type="checkbox" class="switch-input" id="includeMaxLimit">
+                                                <label for="includeMaxLimit" class="switch-paddle">
+                                                    <span class="switch-active primary" aria-hidden="true">]</span>
+                                                    <span class="switch-inactive success" aria-hidden="true">⟩</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <a onclick="addFunction();" class="cell button large expanded">Add Function</a>
+                    </div>
+                </div>
+
+                <div class="tabs-panel" id="AdvancedPanel">
+                    <h3 class="subheader">Still in development</h3>
+                </div>
+                <div class="tabs-panel" id="">
+                    <div class="medium-6 large-5 grid-y grid-margin-y">
+                        <div class="cell">
+                            <h3>Add Function <span class="h4 secondary subheader"><em>Advanced</em></span></h3>
+                            <p class="subheader"><em>Extensive controls</em></p>
+                        </div>
+
+
+                        <div class="cell">
+                            <h4>Declaration</h4>
+                            <label>
+                                <input type="text" class="" aria-describedby="functionNameInputAdv">
+                            </label>
+                            <p class="help-text" id="functionNameInputAdv">E.g. f(x)=x^2-1</p>
+                        </div>
+
+                        <div class="cell">
+                            <div class="grid-x grid-margin-x align-left" aria-describedby="assignHelpText">
+                                <h4 class="cell shrink">Assign function?</h4>
+                                <div class="cell shrink switch">
+                                    <input type="checkbox" class="switch-input" id="assignFunction">
+                                    <label for="assignFunction" class="switch-paddle">
+                                        <span class="switch-active" aria-selected="true">Yes</span>
+                                        <span class="switch-inactive" aria-selected="true">No</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <p class="help-text" id="assignHelpText">Should this function be added to CAS-memory? <a
+                                    href="#"><abbr title="Show in wiki">[?]</abbr></a></p>
+                        </div><!-- Assign Function -->
+
+                        <ul class="cell accordion" data-accordion
+                            data-allow-all-closed="true" data-multi-expand="true">
+                            <li class="accordion-item" data-accordion-item>
+                                <!-- Accordion Tab Title -->
+                                <a href="#" class="accordion-title">Function Limits</a>
+
+                                <div class="accordion-content" data-tab-content>
+                                    <h4>Function Limits</h4>
+                                    <div class="grid-y">
+                                        <div class="cell">
+                                            <h5 class="subheader">Lower Bound</h5>
+                                            <p class="help-text" id="lowerBoundDescAdv">Use lower bound, value,
+                                                open/closed interval <span class="no-em">( ⟨ / [ )</span></p>
+                                            <label>
+                                                <div class="input-group" aria-describedby="lowerBoundDescAdv">
+                                                    <div class="input-group-button switch large">
+                                                        <input type="checkbox" class="switch-input" id="useMinBoundAdv">
+                                                        <label for="useMinBoundAdv" class="switch-paddle">
+                                                            <span class="switch-active" aria-hidden="true">Use</span>
+                                                            <span class="switch-inactive" aria-hidden="true">Off</span>
+                                                        </label>
+                                                    </div>
+                                                    <input type="text" id="functionMinLimitAdv"
+                                                           class="input-group-field medium auto"
+                                                           placeholder=" - - - " disabled="disabled">
+                                                    <div class="input-group-button switch large">
+                                                        <input type="checkbox" class="switch-input"
+                                                               id="includeMinLimitAdv"
+                                                               aria-describedby="closed_interval">
+                                                        <label for="includeMinLimitAdv" class="switch-paddle">
+                                                            <span class="switch-active primary"
+                                                                  aria-hidden="true">[</span>
+                                                            <span class="switch-inactive success"
+                                                                  aria-hidden="true">⟨</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="cell">
+                                            <h5 class="subheader">Upper Bound</h5>
+                                            <p class="help-text" id="upperBoundDescAdv">Use upper bound, value,
+                                                open/closed interval
+                                                <span class="no-em">( ⟩ / ] )</span></p>
+                                            <label>
+                                                <div class="input-group" aria-describedby="upperBoundDescAdv">
+                                                    <div class="input-group-button switch large">
+                                                        <input type="checkbox" class="switch-input" id="useMaxBoundAdv">
+                                                        <label for="useMaxBoundAdv" class="switch-paddle">
+                                                            <span class="switch-active" aria-hidden="true">Use</span>
+                                                            <span class="switch-inactive" aria-hidden="true">Off</span>
+                                                        </label>
+                                                    </div>
+                                                    <input type="text" id="functionMaxLimitAdv"
+                                                           class="input-group-field medium auto"
+                                                           placeholder=" - - - " disabled="disabled">
+                                                    <div class="input-group-button switch large">
+                                                        <input type="checkbox" class="switch-input"
+                                                               id="includeMaxLimitAdv"
+                                                               aria-describedby="closed_interval">
+                                                        <label for="includeMaxLimitAdv" class="switch-paddle">
+                                                            <span class="switch-active primary"
+                                                                  aria-hidden="true">]</span>
+                                                            <span class="switch-inactive success"
+                                                                  aria-hidden="true">⟩</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="accordion-item" data-accordion-item>
+                                <!-- Accordion Tab Title -->
+                                <a href="#" class="accordion-title">Include Derivatives</a>
+
+
+                                <div class="accordion-content" data-tab-content>
+                                    <h4 aria-describedby="addFirstDHelpText">Include Derivatives</h4>
+                                    <p class="help-text" id="addFirstDHelpText">Create and custom-render the derivatives
+                                        of this
+                                        function</p>
+                                    <br>
+                                    <div class="grid-y align-spaced">
+                                        <div class="cell grid-x grid-margin-x">
+                                            <h5 class="cell auto">First derivative</h5>
+                                            <div class="cell shrink switch">
+                                                <input type="checkbox" class="switch-input" id="includeFirstDerivative">
+                                                <label for="includeFirstDerivative" class="switch-paddle">
+                                                    <span class="switch-active" aria-selected="true">Yes</span>
+                                                    <span class="switch-inactive" aria-selected="true">No</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="cell grid-x grid-margin-x">
+                                            <h5 class="cell auto">Second derivative</h5>
+                                            <div class="cell shrink switch">
+                                                <input type="checkbox" class="switch-input"
+                                                       id="includeSecondDerivative">
+                                                <label for="includeSecondDerivative" class="switch-paddle">
+                                                    <span class="switch-active" aria-selected="true">Yes</span>
+                                                    <span class="switch-inactive" aria-selected="true">No</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                        <a href="#" class="button large expanded">Add Function</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cell medium-auto small-12">
+            <canvas width="540" height="270" id="diagram-canvas"></canvas>
+        </div> <!-- Image -->
+
+
+        <hr class="cell cell-block hide-for-small-only">
+        <div class="grid-container cell grid-margin-x"> <!-- Vertical tabs -->
+            <div class="grid-x grid-margin-x">
+
+                <div class="cell medium-3">
+                    <ul class="vertical tabs" data-tabs id="info-tabs">
+                        <li class="tabs-title is-active"><a href="#functionsOverview" aria-selected="true">Functions</a>
+                        </li>
+                        <li class="tabs-title"><a href="#casCommandsOverview">CAS Commands</a></li>
+                        <li class="tabs-title"><a href="#utilitiesTab">Utilities</a></li>
+                    </ul>
+                </div>
+                <div class="cell medium-9">
+                    <div class="tabs-content" data-tabs-content="info-tabs">
+                        <div class="tabs-panel is-active information-tabs" id="functionsOverview">
+                            <!-- Functions will be rendered here -->
+                        </div>
+                        <div class="tabs-panel information-tabs" id="casCommandsOverview">
+                            <!-- CAS Commands will be displayed here -->
+                        </div>
+                        <div class="tabs-panel information-tabs" id="utilitiesTab">
+                            <div class="grid-x grid-margin-x grid-margin-y">
+                                <div class="cell shrink">
+                                    <a class="button medium"
+                                       onclick="render(Properties.primary_render_target);">ReRender</a>
+                                </div>
+                                <div class="cell shrink">
+                                    <a class="button medium"
+                                       onclick="drawSizedImage();">Render Sized Image</a>
+                                </div>
+                                <div class="cell shrink">
+                                    <a class="button medium"
+                                       onclick="fixCanvasWidth(); render(Properties.primary_render_target);">Fix Canvas
+                                        Size</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="medium-6 large-5 columns">
-        <h3>Function Input</h3>
-        <div class="row">
-            <div class="small-3 columns">
-                <label for="functionInput" class="middle">Declaration</label>
+
+    <hr class="cell cell-block hide-for-small-only">
+
+    <footer>
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <ul class="menu">
+                    <li class="menu-text no-bold italic">Original code by</li>
+                    <li><a href="https://github.com/DivineChili" target="_blank">DivineChili</a></li>
+                    <li class="menu-separator menu-text no-bold">–</li>
+                    <li><a href="https://github.com/DivineChili/SignDiagram/">Code</a></li>
+                    <li><a href="https://github.com/DivineChili/SignDiagram/wiki">Wiki</a></li>
+                    <li><a href="https://github.com/DivineChili/SignDiagram/issues">Issues</a></li>
+                    <li class="menu-separator menu-text no-bold">–</li>
+                    <li><a href="https://github.com/DivineChili/SignDiagram/wiki/Download-for-offline-use">Download</a>
+                    </li>
+                </ul>
             </div>
-            <div class="small-9 columns">
-                <input type="text" id="functionInput" placeholder="f(x)=x^2-1">
-            </div>
-        </div>
-        <div class="row">
-            <div class="small-4 columns" id="useMinBoundContainer">
-                <input type="checkbox" id="useMinBound"/>
-                <label for="useMinBound" class="middle">Lower Bound: </label>
-            </div>
-            <div class="small-4 columns">
-                <input type="text" id="functionMinLimit" placeholder=" --- " disabled="disabled">
-            </div>
-            <div class="small-4 columns">
-                <label for="includeMinLimit">
-                    Closed Interval?
-                </label>
-                <input type="checkbox" id="includeMinLimit" disabled="disabled"/>
-            </div>
-        </div>
-        <div class="row">
-            <div class="small-4 columns" id="useMaxBoundContainer">
-                <input type="checkbox" id="useMaxBound"/>
-                <label for="useMaxBound" class="middle">Upper Bound: </label>
-            </div>
-            <div class="small-4 columns">
-                <input type="text" id="functionMaxLimit" placeholder=" --- " disabled="disabled">
-            </div>
-            <div class="small-4 columns">
-                <label for="includeMaxLimit">
-                    Closed Interval?
-                </label>
-                <input type="checkbox" id="includeMaxLimit" disabled="disabled"/>
+            <div class="top-bar-right">
+                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+                    <input type="hidden" name="cmd" value="_s-xclick">
+                    <input type="hidden" name="hosted_button_id" value="6E8Z7QRVYSJPN">
+                    <input type="image" src="https://www.paypalobjects.com/en_US/NO/i/btn/btn_donateCC_LG.gif"
+                           name="submit" title="PayPal - The safer, easier way to pay online!"
+                           alt="Donate with PayPal button">
+                    <img alt="" src="https://www.paypal.com/en_NO/i/scr/pixel.gif" style="display: none !important;"
+                         width="1" hidden="" height="1" border="0">
+                </form>
             </div>
         </div>
-        <a onclick="addFunction();" class="button large expanded">Add Function</a>
-    </div>
+    </footer>
 </div>
 
-<div class="column row" id="info-panel">
-    <div class="row collapse" id="function-information">
-        <div class="medium-3 columns">
-            <ul class="tabs vertical information-tabs" data-tabs id="navigation-tabs">
-                <li class="tabs-title is-active"><a href="#panel1" aria-selected="true">Functions</a></li>
-                <li class="tabs-title"><a href="#panel2">CAS Commands</a></li>
-                <li class="tabs-title"><a href="#panel3">Tools & Settings</a></li>
-            </ul>
-        </div>
-        <div class="medium-9 columns">
-            <div class="tabs-content" data-tabs-content="navigation-tabs">
-                <div class="tabs-panel is-active information-tabs" id="panel1">
-                    <!-- Functions will be rendered here! -->
-                </div>
-                <div class="tabs-panel information-tabs" id="panel2">
-                    <!-- CAS functions will be inserted here -->
-                </div>
-                <div class="tabs-panel information-tabs" id="panel3">
-                    <div class="media-object stack-for-small">
-                        <a onclick="render(Properties.primary_render_target);" class="button medium">ReRender</a>
-                    </div>
-                    <div class="media-object stack-for-small">
-                        <a onclick="drawSizedImage()" class="button medium">Render Sized Image</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row column">
-        <hr>
-        <ul class="menu">
-            <li>SignDiagram</li>
-            <li><a href="https://github.com/DivineChili" target="_blank">DivineChili</a></li>
-            <li class="menu-separator"> –</li>
-            <li><a href="https://github.com/DivineChili/SignDiagram/" target="_blank">Code</a></li>
-            <li><a href="https://github.com/DivineChili/SignDiagram/wiki" target="_blank">Wiki</a></li>
-            <li><a href="https://github.com/DivineChili/SignDiagram/issues" target="_blank">Issues</a></li>
-            <li class="menu-separator"> –</li>
-            <li><a href="https://github.com/DivineChili/SignDiagram/wiki/Download-for-offline-use" target="_blank">Download</a></li>
-            <li class="right-element">
-                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-                    <input type="hidden" name="cmd" value="_s-xclick"/>
-                    <input type="hidden" name="hosted_button_id" value="6E8Z7QRVYSJPN"/>
-                    <input type="image" src="https://www.paypalobjects.com/en_US/NO/i/btn/btn_donateCC_LG.gif"
-                           border="0" name="submit" title="PayPal - The safer, easier way to pay online!"
-                           alt="Donate with PayPal button"/>
-                    <img alt="" border="0" src="https://www.paypal.com/en_NO/i/scr/pixel.gif" width="1" height="1"/>
-                </form>
-            </li>
-        </ul>
-    </div>
-</div>
-<script src="https://dhbhdrzi4tiry.cloudfront.net/cdn/sites/foundation.js"></script>
-<script>
-    $(document).foundation();
-</script>
 <div id="app">
     <!-- MODAL -->
     <div class="modal" id="appModal">
@@ -158,7 +411,7 @@
         <div class="modal-content">
             <div id="modal-app-name">
                 <h2>Sign Diagram</h2>
-                <span>Version <span id="versionDisplay"></span></span>
+                <span>Version <span class="versionDisplay"></span></span>
             </div>
             <div id="modal-load">
                 <div id="modal-description">
@@ -170,7 +423,7 @@
     </div>
 </div>
 
-<script src="js/GUI.js"></script>
+<script src="js/application/GUI.js"></script>
 <script>
     console.log("Pre Initialization Phase...");
     preInit();

@@ -19,7 +19,7 @@
     height: 180px;
 }
 
-#panel2 {
+#casCommandsOverview {
     overflow-x: scroll;
     white-space: nowrap;
 }
